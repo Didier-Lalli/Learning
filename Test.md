@@ -28,6 +28,7 @@ two DC/OS private agent nodes.
 
 The following hardware components were utilized:
 
+|                                |                                        | 
 |--------------------------------|----------------------------------------|
 | Component                      | Purpose                                |
 | HPE ProLiant BL460cGen8 Blades | DC/OS master and agent nodes (Phase 1) |
