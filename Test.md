@@ -127,10 +127,8 @@ on your system using altinstall.
 >
 > make altinstall
 >
-> \# make altinstall is used to prevent replacing the default python
->
-> binary file /usr/bin/python.
->
+> \# make altinstall is used to prevent replacing the default python binary file /usr/bin/python.
+
 
 #### *Step 4: Check the Python Version*
 
@@ -168,6 +166,7 @@ set of tools used to build the entire solution
 ### You can simply clone the repo using:
 
 > cd ~
+>
 > git clone *https://github.com/HewlettPackard/dcos-hpe-oneview*
 
 ### Ansible
