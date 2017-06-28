@@ -30,7 +30,7 @@ The following hardware components were utilized:
 
 |                                |                                        | 
 |--------------------------------|----------------------------------------|
-| Component                      | Purpose                                |
+| **Component**                      | **Purpose**                                |
 | HPE ProLiant BL460cGen8 Blades | DC/OS master and agent nodes (Phase 1) |
 | HPE ProLian BL460c Gen9 Blade  | Bootstrap node (Phase 1)               |
 | HPE SY480 Gen9                 | All nodes (Phase 2)                    |
@@ -42,7 +42,7 @@ The following software components were utilized:
 
 |                                                |                   |    
 |------------------------------------------------|-------------------|
-| Component                                      | **Version**       |
+| **Component**                                      | **Version**       |
 | Mesosphere DC/OS                               | 1.8.8 (Phase 1)   |                                                                     
 |                                                | 1.9 (Phase 2)     |
 | Ansible                                        | 2.2               |
@@ -56,6 +56,7 @@ The following software components were utilized:
 ## Mesosphere DC/OS
 
 In phase 1, we used OpenSource DC/OS version 1.8.8 and 1.9.
+
 In phase 2, we used Enterprise DC/OS version 1.9
 
 ## Management Software Stack
@@ -202,7 +203,7 @@ an IPCop appliance running on VMware
 ([*http://www.ipcop.org/*](http://www.ipcop.org/)). IPCop was also used
 to provide VPN access to the lab environment.
 
-_**Notes:**: Configuration will need to be adapted if operations are performed behind
+_**Notes:** Configuration will need to be adapted if operations are performed behind
 a corporate firewall._
 
 ## HPE OneView configuration
@@ -266,7 +267,7 @@ used for the building of all our nodes in the cluster
 
 <img src="./media/image6.png" width="720" height="443" />
 
-_**Notes:**: Later on during the development of the solution we also validated the
+_**Notes:** Later on during the development of the solution we also validated the
 deployment on RHEL 7.2. The Kickstart file for RHEL7.2 is also provided
 in the solution. You can choose between CentOS 7.2 or RHEL7.2, by simply
 changing the ICsp OS build plan in the custom group\_vars files_
@@ -283,14 +284,16 @@ the Single Sign On (SSO) from OneView and iLO of managed server-hardware
 We configured an ansible.cfg configuration file with the following
 parameters:
 
-> \[defaults\]  
-> log\_path = /root/log/dcos\_play.log  
-> callback\_whitelist = profile\_tasks  
-> library = /root/oneview-ansible/library/  
-> host\_key\_checking = False  
-> inventory = hosts  
-> roles\_path = roles  
-> forks = 50  
+````
+[defaults]  
+log_path = /root/log/dcos_play.log  
+callback_whitelist = profile_tasks  
+library = /root/oneview-ansible/library/  
+host_key_checking = False  
+inventory = hosts  
+roles_path = roles  
+forks = 50  
+````
 
 * **log\_path** allows us to get a log of each Playbook run in a log file
 
