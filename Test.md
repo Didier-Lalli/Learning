@@ -335,10 +335,9 @@ parameters:
 The solution uses a **group\_var/all** configuration file which has to be customized as explained below:
 
 > \# DCOS Settings  
-> DCOS\_GENERATE\_CONFIG\_PATH:  
-> '**/root/dcos-cache/dcos\_generate\_config.sh**'  
-> DCOS\_CLUSTER\_NAME: '**DCOS-ONEVIEW**'  
-> DCOS\_BOOTSTRAP\_URL: '**http://bootstrap.cilab.net**'
+> DCOS\_GENERATE\_CONFIG\_PATH: '/root/dcos-cache/dcos\_generate\_config.sh'  
+> DCOS\_CLUSTER\_NAME: 'DCOS-ONEVIEW'  
+> DCOS\_BOOTSTRAP\_URL: 'http://bootstrap.cilab.net'
 
 It is recommended to cache the dcos\_generate\_config.sh file which is a
 big file. **DCOS\_GENERATE\_CONFIG\_PATH** sets the location of the
@@ -357,7 +356,7 @@ The following variables apply to ICsp:
 > icsp\_username: **Administrator** \# ICsp user name  
 > icsp\_password: **&lt;YourPasswordGoesHere&gt;** \# ICsp password  
 > osbp\_custom\_attributes:  
-> - SSH\_CERT: "{{ lookup('file', '**~/.ssh/root\_ansible.pub**') }}"
+> \- SSH\_CERT: "{{ lookup('file', '**~/.ssh/root\_ansible.pub**') }}"
 
 **Notes:**
 
