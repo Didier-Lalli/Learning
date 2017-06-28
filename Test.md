@@ -110,6 +110,7 @@ from python official site. You can also download latest version in
 place of specified below.
 
 > cd /opt
+>
 > wget --no-check-certificate[
 > ](https://www.python.org/ftp/python/2.7.13/Python-2.7.13.tgz)[*https://www.python.org/ftp/python/2.7.13/Python-2.7.13.tgz*](https://www.python.org/ftp/python/2.7.13/Python-2.7.13.tgz)
 
@@ -136,6 +137,7 @@ on your system using altinstall.
 Check the latest version installed of python using below command
 
 > $ python2.7 -V
+>
 > Python 2.7.13
 
 ### HPE OneView SDK for Python
@@ -145,7 +147,9 @@ installed using the following instructions:
 
 > git clone[
 > ](https://github.com/HewlettPackard/python-hpOneView.git)<https://github.com/HewlettPackard/python-hpOneView.git
+>
 > cd python-hpOneView
+>
 > sudo python2.7 setup.py install
 
 ### Composable Infrastructure Pack for Mesosphere DC/OS
@@ -179,7 +183,9 @@ The latest OneView module for Ansible was used. It can be installed with
 the following instructions:
 
 > cd ~
+>
 > git clone <https://github.com/HewlettPackard/oneview-ansible.git>
+>
 > export ANSIBLE\_LIBRARY=~/oneview-ansible/library
 
 Proof-of-concept lab environment - C7000 (Phase 1)
