@@ -284,7 +284,7 @@ the Single Sign On (SSO) from OneView and iLO of managed server-hardware
 We configured an ansible.cfg configuration file with the following
 parameters:
 
-````
+````yaml
 [defaults]  
 log_path = /root/log/dcos_play.log  
 callback_whitelist = profile_tasks  
@@ -309,10 +309,12 @@ forks = 50
 
 The solution uses a **group\_var/all** configuration file which has to be customized as explained below:
 
-> \# DCOS Settings  
-> DCOS\_GENERATE\_CONFIG\_PATH: '/root/dcos-cache/dcos\_generate\_config.sh'  
-> DCOS\_CLUSTER\_NAME: 'DCOS-ONEVIEW'  
-> DCOS\_BOOTSTRAP\_URL: 'http://bootstrap.cilab.net'
+````yaml
+# DCOS Settings  
+DCOS_GENERATE_CONFIG_PATH: '/root/dcos-cache/dcos_generate_config.sh'  
+DCOS_CLUSTER_NAME: 'DCOS-ONEVIEW'  
+DCOS_BOOTSTRAP_URL: 'http://bootstrap.cilab.net'
+````
 
 It is recommended to cache the dcos\_generate\_config.sh file which is a
 big file. **DCOS\_GENERATE\_CONFIG\_PATH** sets the location of the
@@ -325,45 +327,52 @@ for the installation._
 
 The following variables apply to ICsp:
 
-> icsp: **192.168.1.20** \# ICsp appliance IP Address  
-> icsp\_username: **Administrator** \# ICsp user name  
-> icsp\_password: **&lt;YourPasswordGoesHere&gt;** \# ICsp password  
-> osbp\_custom\_attributes:  
-> \- SSH\_CERT: "{{ lookup('file', '**~/.ssh/root\_ansible.pub**') }}"
+````yaml
+icsp: 192.168.1.20                     # ICsp appliance IP Address  
+icsp_username: Administrator           # ICsp user name  
+icsp_password: <YourPasswordGoesHere>  # ICsp password  
+osbp_custom_attributes:  
+  - SSH_CERT: "{{ lookup('file', '~/.ssh/root_ansible.pub') }}"
+````
 
 _**Notes:** The SSH\_CERT points to the public SSH key to be used by Ansible._
 
 The next section set username and password for iLOs of servers in the
 environment:
 
-> \#iLO Credentials  
-> server\_username: demopaq \# iLO credentials for the target server  
-> that will be registered in ICsp  
-> server\_password: &lt;YourPasswordGoesHere&gt; \#iLO password  
+````yaml
+#iLO Credentials  
+server_username: demopaq                 # iLO credentials for the target server that will be registered in ICsp  
+server_password: <YourPasswordGoesHere>  # iLO password  
+````
 
 Next, we define the DNS domain name and the DNS server IP address:
 
-> \# Network Settings  
-> domain\_name: "cilab.net"
-> dns\_server: 192.168.1.1
+````yaml
+# Network Settings  
+domain_name: "cilab.net"
+dns_server: 192.168.1.1
+````
 
 Finally we define the properties of the 2 interfaces, which shall be set
 to use DHCP:
 
-> network\_config:  
-> hostname: "{{ inventory\_hostname }}"   
-> domain: "{{ domain\_name }}"  
-> interfaces:  
-> \- macAddress: "{{ server\_profile.connections\[0\].mac }}"  
-> enabled: true   
-> dhcpv4: true  
-> ipv6Autoconfig:  
-> vlanid: -1  
-> \- macAddress: "{{ server\_profile.connections\[1\].mac }}"  
-> enabled: true  
-> dhcpv4: true   
-> ipv6Autoconfig: false  
-> virtualInterfaces:  
+````yaml
+network_config:  
+  hostname: "{{ inventory_hostname }}"   
+  domain: "{{ domain_name }}"  
+  interfaces:  
+    - macAddress: "{{ server_profile.connections[0].mac }}"  
+      enabled: true   
+      dhcpv4: true  
+      ipv6Autoconfig:  
+      vlanid: -1  
+    - macAddress: "{{ server\_profile.connections\[1\].mac }}"  
+      enabled: true  
+      dhcpv4: true   
+      ipv6Autoconfig: false  
+      virtualInterfaces:  
+````
 
 In addition to the **group\_vars/all**, we have servers specific
 configuration files to store the name of the OneView server profile to
@@ -372,34 +381,42 @@ group. We have a file for each type of server:
 
 * group\_vars/dcos-bootstrap
 
-> \# OneView Settings  
-> ov\_template: 'DCOS Bootstrap Node'  
-> os\_build\_plan: 'DCOS - RHEL 7.2 x64 Scripted Install'  
-> \#os\_build\_plan: 'DCOS - CentOS 7.2 x64 Scripted Install' 
+````yaml
+# OneView Settings  
+ov_template: 'DCOS Bootstrap Node'  
+os_build_plan: 'DCOS - RHEL 7.2 x64 Scripted Install'  
+#os_build_plan: 'DCOS - CentOS 7.2 x64 Scripted Install' 
+````
 
 * group\_vars/dcos-masters
 
-> \# OneView Settings  
-> ov\_template: 'DCOS Master Node'  
-> os\_build\_plan: 'DCOS - RHEL 7.2 x64 Scripted Install'  
-> \#os\_build\_plan: 'DCOS - CentOS 7.2 x64 Scripted Install'  
-> node\_type: 'master'
+````yaml
+# OneView Settings  
+ov_template: 'DCOS Master Node'  
+os_build_plan: 'DCOS - RHEL 7.2 x64 Scripted Install'  
+#os_build_plan: 'DCOS - CentOS 7.2 x64 Scripted Install'  
+node_type: 'master'
+````
 
 * group\_vars/dcos-private-agents
 
-> \# OneView Settings  
-> ov\_template: 'DCOS Private Agent Node'   
-> os\_build\_plan: 'DCOS - RHEL 7.2 x64 Scripted Install'  
-> \#os\_build\_plan: 'DCOS - CentOS 7.2 x64 Scripted Install'  
-> node\_type: 'slave'
+````yaml
+# OneView Settings  
+ov_template: 'DCOS Private Agent Node'   
+os_build_plan: 'DCOS - RHEL 7.2 x64 Scripted Install'  
+#os_build_plan: 'DCOS - CentOS 7.2 x64 Scripted Install'  
+node_type: 'slave'
+````
 
 * group\_vars/dcos-public-agents
 
-> \# OneView Settings  
-> ov\_template: 'DCOS Public Agent Node'  
-> os\_build\_plan: 'DCOS - RHEL 7.2 x64 Scripted Install'  
-> \#os\_build\_plan: 'DCOS - CentOS 7.2 x64 Scripted Install'  
-> node\_type: 'slave\_public'
+````yaml
+# OneView Settings  
+ov_template: 'DCOS Public Agent Node'  
+os_build_plan: 'DCOS - RHEL 7.2 x64 Scripted Install'  
+#os_build_plan: 'DCOS - CentOS 7.2 x64 Scripted Install'  
+node_type: 'slave_public'
+````
 
 The details about the HPE OneView appliance to use can be found in a
 configuration file called: **oneview_config.json.** This is where we set the IP
@@ -415,7 +432,6 @@ script looks for it in **/root/dcos-cache**. This is configured in
 group\_vars/all
 
 ### Using HPE Composable Infrastructure to provision DC/OS Cluster
---------------------------------------------------------------
 
 HPE's composable infrastructure provides an unified API that uses modern
 REST protocols to create, aggregate, and host internal IT resources so
@@ -751,7 +767,7 @@ described by the inventory **hosts** file), we can add node in the DC/OS
 cluster by simply adding new nodes in the hosts file. In our
 environment, we added an **agent4** to the list of private agents:
 
-`````yaml
+````yaml
 [dcos-private-agents]  
 agent2  
 agent3  
