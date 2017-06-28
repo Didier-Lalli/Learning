@@ -127,8 +127,7 @@ on your system using altinstall.
 
 Check the latest version installed of python using below command
 
-> $ python2.7 -V
->
+> $ python2.7 -V  
 > Python 2.7.13
 
 ### HPE OneView SDK for Python
@@ -136,11 +135,8 @@ Check the latest version installed of python using below command
 The HPE OneView SDK for Python is also a requirement. It can be
 installed using the following instructions:
 
-> git clone[
-> ](https://github.com/HewlettPackard/python-hpOneView.git)<https://github.com/HewlettPackard/python-hpOneView.git
->
-> cd python-hpOneView
->
+> git clone https://github.com/HewlettPackard/python-hpOneView.git  
+> cd python-hpOneView  
 > sudo python2.7 setup.py install
 
 ### Composable Infrastructure Pack for Mesosphere DC/OS
@@ -149,18 +145,16 @@ This pack available from [*HPE
 Github*](https://github.com/HewlettPackard/dcos-hpe-oneview) bundles a
 set of tools used to build the entire solution
 
--   Kickstart file for CentOS 7.2 and RedHat 7.2 (used for C-Class only)
-
--   ICsp script for loading SSH key in target OS (used for C-Class only)
-
--   Ansible playbooks and associated scripts for deploying the above and
+*   Kickstart file for CentOS 7.2 and RedHat 7.2 (used for C-Class only)
+*   ICsp script for loading SSH key in target OS (used for C-Class only)
+*   Ansible playbooks and associated scripts for deploying the above and
     also the DC/OS components
+*   Artifact Bundle to load in Synergy Image Streamer (used for Synergy only)
 
 ### You can simply clone the repo using:
 
-> cd ~
->
-> git clone *https://github.com/HewlettPackard/dcos-hpe-oneview*
+> cd ~  
+> git clone https://github.com/HewlettPackard/dcos-hpe-oneview
 
 ### Ansible
 
@@ -174,11 +168,11 @@ call the Ansible Station throughout the document.
 The latest OneView module for Ansible was used. It can be installed with
 the following instructions:
 
-> cd ~
->
-> git clone <https://github.com/HewlettPackard/oneview-ansible.git>
->
-> export ANSIBLE\_LIBRARY=~/oneview-ansible/library
+> cd ~  
+> git clone <https://github.com/HewlettPackard/oneview-ansible.git>  
+> export ANSIBLE\_LIBRARY=~/oneview-ansible/library  
+> export PYTHONPATH=$PYTHONPATH:$ANSIBLE_LIBRARY
+
 
 Proof-of-concept lab environment - C7000 (Phase 1)
 ==================================================
