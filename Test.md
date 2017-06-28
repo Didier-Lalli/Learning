@@ -39,6 +39,7 @@ The following hardware components were utilized:
 
 The following software components were utilized:
 
+|                                                |                   |    
 |------------------------------------------------|-------------------|
 | Component                                      | **Version**       |
 | Mesosphere DC/OS                               | 1.8.8 (Phase 1)   |                                                                     
