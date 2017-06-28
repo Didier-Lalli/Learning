@@ -366,15 +366,15 @@ The next section set username and password for iLOs of servers in the
 environment:
 
 > \#iLO Credentials  
-> server\_username: **demopaq** \# iLO credentials for the target server  
+> server\_username: demopaq \# iLO credentials for the target server  
 > that will be registered in ICsp  
-> server\_password: **&lt;YourPasswordGoesHere&gt;** \#iLO password  
+> server\_password: &lt;YourPasswordGoesHere&gt; \#iLO password  
 
 Next, we define the DNS domain name and the DNS server IP address:
 
 > \# Network Settings  
-> domain\_name: "**cilab.net"**  
-> dns\_server: **192.168.1.1**
+> domain\_name: "cilab.net"
+> dns\_server: 192.168.1.1
 
 Finally we define the properties of the 2 interfaces, which shall be set
 to use DHCP:
@@ -383,12 +383,12 @@ to use DHCP:
 > hostname: "{{ inventory\_hostname }}"   
 > domain: "{{ domain\_name }}"  
 > interfaces:  
-> - macAddress: "{{ server\_profile.connections\[0\].mac }}"  
+> \- macAddress: "{{ server\_profile.connections\[0\].mac }}"  
 > enabled: true   
 > dhcpv4: true  
 > ipv6Autoconfig:  
 > vlanid: -1  
-> - macAddress: "{{ server\_profile.connections\[1\].mac }}"  
+> \- macAddress: "{{ server\_profile.connections\[1\].mac }}"  
 > enabled: true  
 > dhcpv4: true   
 > ipv6Autoconfig: false  
@@ -510,68 +510,38 @@ where **ov\_dcos.yml** is the main playbook provided in the solution.
 
 The playbook contains a series of plays:
 
-> - name: Install all Physical Nodes
->
-> hosts: all-nodes
->
-> vars:
->
-> ov\_osbp: "{{ os\_build\_plan }}"
->
-> ov\_profile: "{{ ov\_template }}"
->
-> gather\_facts: no
->
-> roles:
->
-> - hpe-oneview-server
->
-> - name: All nodes are DC/OS Nodes
->
-> hosts: all-nodes
->
-> gather\_facts: yes
->
-> roles:
->
-> - dcos-node
->
-> - name: Collect configuration of nodes
->
-> hosts: all-nodes
->
-> gather\_facts: yes
->
-> tasks:
->
-> - name: Link Certificate Authorities
->
-> \# required on CentOS because DC/OS compilation is done on Ubuntu
->
-> file: src=/etc/ssl/certs/ca-bundle.crt
-> dest=/etc/ssl/certs/ca-certificates.crt state=link
->
-> - include: tasks/detect-public-ip.yml
->
-> - name: Generate DC/OS Bootstrap
->
-> hosts: dcos-bootstrap
->
-> gather\_facts: no
->
-> tasks:
->
-> - include: tasks/bootstrap.yml
->
-> - name: Install DC/OS Masters and Agents
->
-> hosts: dcos-masters,dcos-agents
->
-> gather\_facts: no
->
-> tasks:
->
-> - include: tasks/install.yml
+> \- name: Install all Physical Nodes  
+> hosts: all-nodes  
+> vars:  
+> ov\_osbp: "{{ os\_build\_plan }}"  
+> ov\_profile: "{{ ov\_template }}"  
+> gather\_facts: no  
+> roles:  
+> \- hpe-oneview-server  
+> \- name: All nodes are DC/OS Nodes  
+> hosts: all-nodes  
+> gather\_facts: yes  
+> roles:  
+> \- dcos-node  
+> \- name: Collect configuration of nodes  
+> hosts: all-nodes  
+> gather\_facts: yes  
+> tasks:  
+> \- name: Link Certificate Authorities  
+> \# required on CentOS because DC/OS compilation is done on Ubuntu  
+> file: src=/etc/ssl/certs/ca-bundle.crt  
+> dest=/etc/ssl/certs/ca-certificates.crt state=link  
+> \- include: tasks/detect-public-ip.yml  
+> \- name: Generate DC/OS Bootstrap  
+> hosts: dcos-bootstrap  
+> gather\_facts: no  
+> tasks:  
+> \- include: tasks/bootstrap.yml  
+> \- name: Install DC/OS Masters and Agents  
+> hosts: dcos-masters,dcos-agents  
+> gather\_facts: no  
+> tasks:  
+> \- include: tasks/install.yml  
 
 The sequencing of the task in this playbook is the following:
 
@@ -584,21 +554,14 @@ an OS)
 
 Let's look in more details each of the plays from **ov\_dcos.yml**
 
-> - name: Install all Physical Nodes
->
-> hosts: all-nodes
->
-> vars:
->
-> ov\_osbp: "{{ os\_build\_plan }}"
->
+> \- name: Install all Physical Nodes  
+> hosts: all-nodes  
+> vars:  
+> ov\_osbp: "{{ os\_build\_plan }}"  
 > ov\_profile: "{{ ov\_template }}"
->
 > gather\_facts: no
->
 > roles:
->
-> - hpe-oneview-server
+> \- hpe-oneview-server
 
 This task provisions all nodes in parallel. That is the bootstrap
 system, the masters and the agents using a **hp-oneview-server** role.
@@ -620,22 +583,22 @@ folder **./roles/hpe-oneview-server**. The **file
     assign it to an available server-hardware in our pool of resources
     (this uses the HPE OneView REST API)
 
-> <img src="./media/image8.png" width="619" height="296" />
+<img src="./media/image8.png" width="619" height="296" />
 
-1.  Power the servers on
+3.  Power the servers on
 
-2.  Register the servers in ICsp, using the iLO IP address (this uses
+4.  Register the servers in ICsp, using the iLO IP address (this uses
     the HPE ICsp REST API)
 
-3.  Pass the network configuration set in **group\_vars/all** to ICsp
+5.  Pass the network configuration set in **group\_vars/all** to ICsp
     (stored as ICsp custom properties). (this uses the HPE ICsp
     REST API)
 
-4.  Deploy the OS on these servers using ICsp, and the OS build plan
+6.  Deploy the OS on these servers using ICsp, and the OS build plan
     provided in custom group\_vars files (this uses the HPE ICsp
     REST API)
 
-> <img src="./media/image9.png" width="648" height="302" />
+<img src="./media/image9.png" width="648" height="302" />
 
 **Notes:**
 
@@ -643,33 +606,23 @@ The tasks in the **hpe-oneview-server** role all run on the Ansible
 Station, as instructed by the **deleguate\_to: localhost**, as
 illustrated below:
 
-> - name: Create Server Profiles
->
-> oneview\_server\_profile:
->
-> config: "{{ playbook\_dir }}/../oneview\_config.json"
->
-> data:
->
-> server\_template: "{{ ov\_profile }}"
->
-> name: "{{ inventory\_hostname }}"
->
+> \- name: Create Server Profiles  
+> oneview\_server\_profile:  
+> config: "{{ playbook\_dir }}/../oneview\_config.json"  
+> data:  
+> server\_template: "{{ ov\_profile }}"  
+> name: "{{ inventory\_hostname }}"  
 > **delegate\_to: localhost**
 
 After this play is finished, all servers have been provisioned, and an
 SSH key has been installed so that the next play can continue on the
 target host. The next play is the following:
 
-> - name: All nodes are DC/OS Nodes
->
-> hosts: all-nodes
->
-> gather\_facts: yes
->
-> roles:
->
-> - dcos-node
+> \- name: All nodes are DC/OS Nodes
+> hosts: all-nodes  
+> gather\_facts: yes  
+> roles:  
+> \- dcos-node  
 
 It applies to all-nodes and it uses another custom role called
 **dcos-node** which installs all the software prerequisites for DC/OS
@@ -699,54 +652,36 @@ the public network interface and the public IP of each node, and stores
 it as Ansible facts (**public\_iface** and **public\_ip**) for the given
 node:
 
-> - name: Collect configuration of nodes
+> \- name: Collect configuration of nodes  
+> hosts: all-nodes  
+> gather\_facts: yes  
+> tasks:  
+> \- name: Link Certificate Authorities  
+> \# required on CentOS because DC/OS compilation is done on Ubuntu  
+>   file: src=/etc/ssl/certs/ca-bundle.crt
+>   dest=/etc/ssl/certs/ca-certificates.crt state=link
 >
-> hosts: all-nodes
->
-> gather\_facts: yes
->
-> tasks:
->
-> - name: Link Certificate Authorities
->
-> \# required on CentOS because DC/OS compilation is done on Ubuntu
->
-> file: src=/etc/ssl/certs/ca-bundle.crt
-> dest=/etc/ssl/certs/ca-certificates.crt state=link
->
-> - include: tasks/detect-public-ip.yml
+> \- include: tasks/detect-public-ip.yml
 
 The script to extract the public IP address is the following:
 
-> - name: Set Public Network Interface
->
-> shell: "ifconfig | grep eno | cut --delimiter=: -f 1"
->
-> register: if\_name
->
-> - **set\_fact: public\_iface={{ if\_name.stdout }}**
->
-> - name: Detect Public IP
->
-> **set\_fact: public\_ip={{
-> hostvars\[inventory\_hostname\]\['ansible\_' +
-> public\_iface\]\['ipv4'\]\['address'\] }}**
->
-> - debug: var=public\_ip
+> \- name: Set Public Network Interface  
+> shell: "ifconfig | grep eno | cut --delimiter=: -f 1"  
+> register: if\_name  
+> \- set\_fact: public\_iface={{ if\_name.stdout }}  
+> \- name: Detect Public IP
+> set\_fact: public\_ip={{ hostvars\[inventory\_hostname\]\['ansible\_' + public\_iface\]\['ipv4'\]\['address'\] }}  
+> \- debug: var=public\_ip
 
 Once we know the IP layout of the provisioned servers we can start
 preparing the DC/OS installation on the bootstrap node. This done by a
 script called **/tasks/bootstrap.yml**
 
-> - name: Generate DC/OS Bootstrap
->
-> hosts: dcos-bootstrap
->
-> gather\_facts: no
->
-> tasks:
->
-> - include: tasks/bootstrap.yml
+> \- name: Generate DC/OS Bootstrap  
+> hosts: dcos-bootstrap  
+> gather\_facts: no  
+> tasks:  
+> \- include: tasks/bootstrap.yml
 
 This is use use **dcos\_generate\_config.sh** to generate a DC/OS
 configuration, based on the IP layout. It also starts a nginx docker
@@ -755,15 +690,11 @@ bootstrap node is ready to accept other nodes installation over the URL:
 **http://bootstrap.cilab.net**. We can initiate the last step, which
 installs masters and agents (in parallel)
 
-> - name: Install DC/OS Masters and Agents
->
-> hosts: dcos-masters,dcos-agents
->
-> gather\_facts: no
->
-> tasks:
->
-> - include: tasks/install.yml
+> \- name: Install DC/OS Masters and Agents  
+> hosts: dcos-masters,dcos-agents  
+> gather\_facts: no  
+> tasks:  
+> \- include: tasks/install.yml
 
 The tasks **/tasks/install.yml** expects a variable called
 **node\_type** set to either **master, slave or public\_slave.** We set
@@ -779,55 +710,43 @@ procedure provided by Mesosphere:
 
 1.  Install jq
 
-> wget
-> https://github.com/stedolan/jq/releases/download/jq-1.5/jq-linux64  
-> chmod +x ./jq-linux64  
-> cp jq-linux64 /usr/bin/jq
+> wget https://github.com/stedolan/jq/releases/download/jq-1.5/jq-linux64  
+> chmod +x ./jq-linux64   
+> cp jq-linux64 
+> /usr/bin/jq  
 
-1.  Retrieve public agents IP addresses
+2.  Retrieve public agents IP addresses
 
-> curl -s http://localhost:1050/system/health/v1/nodes | jq -r '.\[\] |
-> map(select(.role == "agent\_public")) | .\[\].host\_ip'
->
+> curl -s http://localhost:1050/system/health/v1/nodes | jq -r '.\[\] | map(select(.role == "agent\_public")) | .\[\].host\_ip'  
 > 192.168.22.101
 
-1.  Retrieve private agents IP addresses
+3.  Retrieve private agents IP addresses
 
-> curl -s http://localhost:1050/system/health/v1/nodes | jq -r '.\[\] |
-> map(select(.role == "agent")) | .\[\].host\_ip'
->
-> 192.168.33.102
->
+> curl -s http://localhost:1050/system/health/v1/nodes | jq -r '.\[\] | map(select(.role == "agent")) | .\[\].host\_ip'  
+> 192.168.33.102  
 > 192.168.33.101
 
-1.  Export those IP and install dig from bind-utils
+4.  Export those IP and install dig from bind-utils
 
-> export SLAVE\_HOSTS=192.168.33.101,192.168.33.102
->
-> export PUBLIC\_SLAVE\_HOSTS=192.168.22.101
+> export SLAVE\_HOSTS=192.168.33.101,192.168.33.102  
+> export PUBLIC\_SLAVE\_HOSTS=192.168.22.101  
+> yum install bind-utils -y
 
-yum install bind-utils -y
+5.  Add test user
 
-1.  Add test user
-
-source /opt/mesosphere/environment.export
-
-> python /opt/mesosphere/active/dcos-oauth/bin/dcos\_add\_user.py
-> [*albert@bekstil.net*](mailto:albert@bekstil.net)
->
-> source /opt/mesosphere/active/dcos-integration-test/test\_env.export
->
+> source /opt/mesosphere/environment.export  
+> python /opt/mesosphere/active/dcos-oauth/bin/dcos\_add\_user.py [*albert@bekstil.net*]  
+> source /opt/mesosphere/active/dcos-integration-test/test\_env.export  
 > cd /opt/mesosphere/active/dcos-integration-test
 
-1.  Run validation test
+6.  Run validation test
 
 > py.test -m 'not ccm'
 
 This should result in the following:
 
-> ===================== 1 tests deselected by "-m 'not ccm'"
-> ===================== ============= 52 passed, 3 skipped, 1 deselected
-> in 372.21 seconds =============
+> ===================== 1 tests deselected by "-m 'not ccm'" =====================  
+> ============= 52 passed, 3 skipped, 1 deselected in 372.21 seconds =============
 
 Once this is validated, we can now operate our brand new DC/OS cluster
 by accessing **http://master1/\#/dashboard/** or any of the other
@@ -839,7 +758,6 @@ We can also select the Node view to validate our 3 Agents (1 public and
 2 private), up and running.
 
 <img src="./media/image12.png" width="720" height="423" />
-
   
 Use case 2 - Adding an Agent node to a live DC/OS cluster
 ---------------------------------------------------------
@@ -851,12 +769,9 @@ described by the inventory **hosts** file), we can add node in the DC/OS
 cluster by simply adding new nodes in the hosts file. In our
 environment, we added an **agent4** to the list of private agents:
 
-> \[dcos-private-agents\]
->
-> agent2
->
-> agent3
->
+> \[dcos-private-agents\]  
+> agent2  
+> agent3  
 > **agent4**
 
 And reran the same Ansible playbook, and waited for the end of it to
@@ -872,23 +787,19 @@ We have created a separate playbook to remove an agent from the cluster.
 This playbooks will operate on nodes listed in the
 **dcos-evicted-agent** section at the end of the inventory hosts file:
 
-> \[dcos-evicted-agents\]
->
+> \[dcos-evicted-agents\]  
 > **agent4**
 
 In our case, we are evicting agent 4. So, we should also remove it from
 the private agents list of that same hosts file:
 
-> \[dcos-private-agents\]
->
-> agent2
->
+> \[dcos-private-agents\]  
+> agent2  
 > agent3
 
 Once this is done we can run the following ansible playbook:
 
-> ansible-playbook **ov\_dcos\_clean\_agent.yml** -vvv -e
-> "ansible\_python\_interpreter=/usr/local/bin/python2.7"
+> ansible-playbook **ov\_dcos\_clean\_agent.yml** -vvv -e "ansible\_python\_interpreter=/usr/local/bin/python2.7"
 
 This will first drain all services of all dcos-evicted-agents and then
 delete the HPE OneView server profiles associated with these nodes and
@@ -902,8 +813,7 @@ DC/OS cluster and returning all the compute resources to the free pool
 of resources. The playbook is called **ov\_dcos\_decompose\_all.yml**,
 and it should be invoked (with care) using the following command:
 
-> ansible-playbook ov\_dcos\_decompose\_all.yml -vvv -e
-> "ansible\_python\_interpreter=/usr/local/bin/python2.7"
+> ansible-playbook ov\_dcos\_decompose\_all.yml -vvv -e "ansible\_python\_interpreter=/usr/local/bin/python2.7"
 
 **Notes**
 
@@ -951,9 +861,8 @@ HPE Composer configuration
 In HPE Composer (OneView) we have created a single Server Profile
 Template for all nodes with the following details:
 
--   1 network connection
-
--   Server Hardware Type: SY480 Gen9
+* 1 network connection
+* Server Hardware Type: SY480 Gen9
 
 <img src="./media/image14.png" width="720" height="344" />
 
@@ -989,9 +898,9 @@ Image Streamer Golden Image
 
 We created a Golden image for this test, which contains the following:
 
--   RedHat Enterprise Linux 7.3
+* RedHat Enterprise Linux 7.3
 
--   Yum configured to point to a RHEL7.3 repo
+* Yum configured to point to a RHEL7.3 repo
 
 <img src="./media/image17.png" width="720" height="366" />
 
@@ -1006,16 +915,14 @@ Importing the solution artifact bundle
 
 We created an artifact bundle with the following components:
 
--   1 x OS build plan
-
--   8 x Plan Scripts used by the OS build plan
+* 1 x OS build plan
+* 8 x Plan Scripts used by the OS build plan
 
 <img src="./media/image18.png" width="720" height="370" />
 
 In order to use this solution, you should:
 
 1.  Download the artifact bundle from Github
-
 2.  Import the artifact bundle into Image Streamer
 
     <img src="./media/image19.png" width="263" height="182" />
@@ -1041,11 +948,9 @@ when the architecture imposed a different approach. To do this we used a
 new variable in **group\_vars/all** called HARDWARE\_ARCHITECTURE which
 should be set to either
 
--   HPE-CCLASS
-
--   HPE-SYNERGY
-
--   HPE-DL
+*   HPE-CCLASS
+*   HPE-SYNERGY
+*   HPE-DL
 
 Then we provided a custom file for each architecture, for example:
 docker-on-HPE-SYNERGY.yml and docker-on-HPE-CCLASS.yml. Finally within
@@ -1055,23 +960,22 @@ HARDWARE\_ARCHITECTURE }}.yml
 **Notes:**
 
 We provided implementation for HPE-CCLASS and HPE-SYNERGY but not yet
-HPE-DL.<span id="_1ksv4uv" class="anchor"></span>
+HPE-DL.
 
-We also added a few more variables in group\_vars/all:
+We also added a few more variables in **group\_vars/all**:
 
--   INTERFACE\_NAME: ens3f4 : hold the name of the interface to be used
+*   INTERFACE\_NAME: ens3f4 : hold the name of the interface to be used
     for public networking (and SSH traffic used by Ansible)
 
--   DCOS\_BOOTSTRAP\_URL: 'http://bootstrap.{{ domain\_name }}' : holds
+*   DCOS\_BOOTSTRAP\_URL: 'http://bootstrap.{{ domain\_name }}' : holds
     the fqdn of the bootstrap machine
 
--   management\_network\_name: 'Mgmt A' : holds the name of the
+*   management\_network\_name: 'Mgmt A' : holds the name of the
     Management Network in the OneView Server profile
 
 We can invoke the playbook the same way as in Phase 1:
 
-ansible-playbook ov\_dcos.yml -vvv -e
-"ansible\_python\_interpreter=/usr/local/bin/python2.7"
+> ansible-playbook ov\_dcos.yml -vvv -e "ansible\_python\_interpreter=/usr/local/bin/python2.7"
 
 <img src="./media/image23.png" width="527" height="404" />
 
@@ -1090,9 +994,7 @@ This solution leverages HPE OneView and HPE Composable Infrastructure to
 provision a Mesosphere DC/OS Cluster, ready to run payload. The solution
 can provision the cluster from a set of available compute resources in
 an HPE Composable Infrastructure, in less than 90mn using Ansible
-(C-Class) and even less than TBD minutes (Synergy and ImageStreamer).
+(C-Class) and even less than 35 minutes (Synergy and ImageStreamer).
 The solution is fully automated and consistent, allowing to truly manage
 your infrastructure as code. The solution can be used as an example to
 build other solutions.
-
-<span id="_44sinio" class="anchor"></span>
