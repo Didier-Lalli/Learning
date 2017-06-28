@@ -468,6 +468,7 @@ infrastructure for a configuration with:
 
 This is described by our Ansible inventory **hosts** file:
 
+````yaml
 > \# There is only one bootstrap node  
 > \[dcos-bootstrap\]  
 > bootstrap  
@@ -497,7 +498,7 @@ This is described by our Ansible inventory **hosts** file:
 > dcos-bootstrap  
 > dcos-masters  
 > dcos-agents
-
+````
 ### 
 
 The full provisioning of the solution is initiated by running the
@@ -514,39 +515,37 @@ The playbook contains a series of plays:
 - name: Install all Physical Nodes  
   hosts: all-nodes  
   vars:  
-  ov\_osbp: "{{ os\_build\_plan }}"  
-  ov\_profile: "{{ ov\_template }}"  
-  gather\_facts: no  
+    ov_osbp: "{{ os_build_plan }}"  
+    ov_profile: "{{ ov_template }}"  
+  gather_facts: no  
   roles:  
-  \- hpe-oneview-server  
+    - hpe-oneview-server  
 
 - name: All nodes are DC/OS Nodes  
   hosts: all-nodes  
-  gather\_facts: yes  
+  gather_facts: yes  
   roles:  
-  \- dcos-node  
+    - dcos-node  
  
 - name: Collect configuration of nodes  
   hosts: all-nodes  
-  gather\_facts: yes  
+  gather_facts: yes  
   tasks:  
-  \- name: Link Certificate Authorities  
-  \# required on CentOS because DC/OS compilation is done on Ubuntu  
-  file: src=/etc/ssl/certs/ca-bundle.crt  
-  dest=/etc/ssl/certs/ca-certificates.crt state=link  
-  \- include: tasks/detect-public-ip.yml  
+    - name: Link Certificate Authorities # required on CentOS because DC/OS compilation is done on Ubuntu  
+      file: src=/etc/ssl/certs/ca-bundle.crt dest=/etc/ssl/certs/ca-certificates.crt state=link  
+    - include: tasks/detect-public-ip.yml  
 
 - name: Generate DC/OS Bootstrap  
   hosts: dcos-bootstrap  
-  gather\_facts: no  
+  gather_facts: no  
   tasks:  
-  \- include: tasks/bootstrap.yml  
+    - include: tasks/bootstrap.yml  
 
 - name: Install DC/OS Masters and Agents  
   hosts: dcos-masters,dcos-agents  
-  gather\_facts: no  
+  gather_facts: no  
   tasks:  
-  \- include: tasks/install.yml  
+    - include: tasks/install.yml  
 ````
 The sequencing of the task in this playbook is the following:
 
@@ -559,14 +558,16 @@ an OS)
 
 Let's look in more details each of the plays from **ov\_dcos.yml**
 
-> \- name: Install all Physical Nodes  
-> hosts: all-nodes  
-> vars:  
-> ov\_osbp: "{{ os\_build\_plan }}"  
-> ov\_profile: "{{ ov\_template }}"
-> gather\_facts: no
-> roles:
-> \- hpe-oneview-server
+````yaml
+- name: Install all Physical Nodes  
+  hosts: all-nodes  
+  vars:  
+    ov_osbp: "{{ os_build_plan }}"  
+    ov_profile: "{{ ov_template }}"
+  gather_facts: no
+  roles:
+    - hpe-oneview-server
+````
 
 This task provisions all nodes in parallel. That is the bootstrap
 system, the masters and the agents using a **hp-oneview-server** role.
@@ -611,23 +612,27 @@ The tasks in the **hpe-oneview-server** role all run on the Ansible
 Station, as instructed by the **deleguate\_to: localhost**, as
 illustrated below:
 
-> \- name: Create Server Profiles  
-> oneview\_server\_profile:  
-> config: "{{ playbook\_dir }}/../oneview\_config.json"  
-> data:  
-> server\_template: "{{ ov\_profile }}"  
-> name: "{{ inventory\_hostname }}"  
-> **delegate\_to: localhost**
+````yaml
+- name: Create Server Profiles  
+  oneview_server_profile:  
+    config: "{{ playbook_dir }}/../oneview_config.json"  
+    data:  
+      server_template: "{{ ov_profile }}"  
+      name: "{{ inventory_hostname }}"  
+  delegate_to: localhost
+````
 
 After this play is finished, all servers have been provisioned, and an
 SSH key has been installed so that the next play can continue on the
 target host. The next play is the following:
 
-> \- name: All nodes are DC/OS Nodes
-> hosts: all-nodes  
-> gather\_facts: yes  
-> roles:  
-> \- dcos-node  
+````yaml
+- name: All nodes are DC/OS Nodes
+  hosts: all-nodes  
+  gather_facts: yes  
+  roles:  
+    - dcos-node  
+````
 
 It applies to all-nodes and it uses another custom role called
 **dcos-node** which installs all the software prerequisites for DC/OS
@@ -657,36 +662,41 @@ the public network interface and the public IP of each node, and stores
 it as Ansible facts (**public\_iface** and **public\_ip**) for the given
 node:
 
-> \- name: Collect configuration of nodes  
-> hosts: all-nodes  
-> gather\_facts: yes  
-> tasks:  
-> \- name: Link Certificate Authorities  
-> \# required on CentOS because DC/OS compilation is done on Ubuntu  
->   file: src=/etc/ssl/certs/ca-bundle.crt
->   dest=/etc/ssl/certs/ca-certificates.crt state=link
->
-> \- include: tasks/detect-public-ip.yml
+````yaml
+- name: Collect configuration of nodes  
+  hosts: all-nodes  
+  gather_facts: yes  
+  tasks:  
+    - name: Link Certificate Authorities # required on CentOS because DC/OS compilation is done on Ubuntu  
+      file: src=/etc/ssl/certs/ca-bundle.crt dest=/etc/ssl/certs/ca-certificates.crt state=link
+    - include: tasks/detect-public-ip.yml
+````
 
 The script to extract the public IP address is the following:
 
-> \- name: Set Public Network Interface  
-> shell: "ifconfig | grep eno | cut --delimiter=: -f 1"  
-> register: if\_name  
-> \- set\_fact: public\_iface={{ if\_name.stdout }}  
-> \- name: Detect Public IP
-> set\_fact: public\_ip={{ hostvars\[inventory\_hostname\]\['ansible\_' + public\_iface\]\['ipv4'\]\['address'\] }}  
-> \- debug: var=public\_ip
+````yaml
+- name: Set Public Network Interface  
+  shell: "ifconfig | grep eno | cut --delimiter=: -f 1"  
+  register: if_name  
+- set_fact: public_iface={{ if_name.stdout }}  
+    
+- name: Detect Public IP
+  set_fact: public_ip={{ hostvars[inventory_hostname]\['ansible_' + public_iface]['ipv4']['address'] }}  
+
+- debug: var=public_ip
+````
 
 Once we know the IP layout of the provisioned servers we can start
 preparing the DC/OS installation on the bootstrap node. This done by a
 script called **/tasks/bootstrap.yml**
 
-> \- name: Generate DC/OS Bootstrap  
-> hosts: dcos-bootstrap  
-> gather\_facts: no  
-> tasks:  
-> \- include: tasks/bootstrap.yml
+````yaml
+- name: Generate DC/OS Bootstrap  
+  hosts: dcos-bootstrap  
+  gather_facts: no  
+  tasks:  
+    - include: tasks/bootstrap.yml
+````
 
 This is use use **dcos\_generate\_config.sh** to generate a DC/OS
 configuration, based on the IP layout. It also starts a nginx docker
@@ -695,18 +705,20 @@ bootstrap node is ready to accept other nodes installation over the URL:
 **http://bootstrap.cilab.net**. We can initiate the last step, which
 installs masters and agents (in parallel)
 
-> \- name: Install DC/OS Masters and Agents  
-> hosts: dcos-masters,dcos-agents  
-> gather\_facts: no  
-> tasks:  
-> \- include: tasks/install.yml
+````yaml
+- name: Install DC/OS Masters and Agents  
+  hosts: dcos-masters,dcos-agents  
+  gather_facts: no  
+  tasks:  
+    - include: tasks/install.yml
+````
 
 The tasks **/tasks/install.yml** expects a variable called
 **node\_type** set to either **master, slave or public\_slave.** We set
 this variable in the group\_var custom files.
 
-When the playbooks terminates, we can see that it was successful (also
-it took about 1 hours and 22 minutes):
+When the playbooks terminates, we can see that it was successful (and
+it took about 1 hours and 22 minutes to complete):
 
 <img src="./media/image10.png" width="720" height="201" />
 
@@ -716,7 +728,7 @@ procedure provided by Mesosphere:
 1.  Install jq
 
 > wget https://github.com/stedolan/jq/releases/download/jq-1.5/jq-linux64  
-> chmod +x ./jq-linux64   
+> chmod +x ./jq-linux64  
 > cp jq-linux64 
 > /usr/bin/jq  
 
@@ -774,10 +786,12 @@ described by the inventory **hosts** file), we can add node in the DC/OS
 cluster by simply adding new nodes in the hosts file. In our
 environment, we added an **agent4** to the list of private agents:
 
-> \[dcos-private-agents\]  
-> agent2  
-> agent3  
-> **agent4**
+`````yaml
+[dcos-private-agents]  
+agent2  
+agent3  
+agent4
+````
 
 And reran the same Ansible playbook, and waited for the end of it to
 refresh the Nodes view. The 4<sup>th</sup> agent shows up in the node
@@ -792,15 +806,18 @@ We have created a separate playbook to remove an agent from the cluster.
 This playbooks will operate on nodes listed in the
 **dcos-evicted-agent** section at the end of the inventory hosts file:
 
-> \[dcos-evicted-agents\]  
-> **agent4**
+````yaml
+[dcos-evicted-agents]  
+agent4
+````
 
 In our case, we are evicting agent 4. So, we should also remove it from
 the private agents list of that same hosts file:
 
-> \[dcos-private-agents\]  
-> agent2  
-> agent3
+````yaml
+[dcos-private-agents]
+agent2  
+agent3
 
 Once this is done we can run the following ansible playbook:
 
