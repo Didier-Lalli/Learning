@@ -119,11 +119,17 @@ Use below set of commands to extract Python source code and compile it
 on your system using altinstall.
 
 > tar -xvf Python-2.7.13.tgz
+>
 > cd Python-2.7.13
+>
 > ./configure
+>
 > make altinstall
+>
 > \# make altinstall is used to prevent replacing the default python
+>
 > binary file /usr/bin/python.
+>
 
 #### *Step 4: Check the Python Version*
 
