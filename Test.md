@@ -889,7 +889,6 @@ changes on the OS Volume, using the input parameters of the Build Plan
 We created a Golden image for this test, which contains the following:
 
 * RedHat Enterprise Linux 7.3
-
 * Yum configured to point to a RHEL7.3 repo
 
 <img src="./media/image17.png" width="720" height="366" />
@@ -909,7 +908,7 @@ We created an artifact bundle with the following components:
 
 In order to use this solution, you should:
 
-1.  Download the artifact bundle from Github
+1.  Download the artifact bundle from [Github](https://github.com/HewlettPackard/dcos-hpe-oneview)
 2.  Import the artifact bundle into Image Streamer
 
     <img src="./media/image19.png" width="263" height="182" />
@@ -920,7 +919,7 @@ In order to use this solution, you should:
 
     <img src="./media/image21.png" width="594" height="286" />
 
-4.  Build appropriate golden image following instructions provided at https://github.com/HewlettPackard/image-streamer-rhel/blob/master/docs/HPE%20Synergy%20Image%20Streamer%20RHEL%207.3%20Capture.pdf
+4.  Build appropriate golden image following instructions provided by this [whitepaper](https://github.com/HewlettPackard/image-streamer-rhel/blob/master/docs/HPE%20Synergy%20Image%20Streamer%20RHEL%207.3%20Capture.pdf)
 
 5.  Create a Deployment Plan which associates the imported OS build plan
     and the created golden image. Leave all attribute values blank
@@ -964,7 +963,7 @@ We can invoke the playbook the same way as in Phase 1:
 <img src="./media/image23.png" width="527" height="404" />
 
 Provisioning was down from 1h22mn to 36mn using the ImageStream instead
-of a PXE boot installation such as ICsp.
+of a PXE boot software such as ICsp.
 
 _**Notes:** Use cases 2 (adding nodes) and 3 (removing agent nodes) was also tested
 with Synergy, and works exactly the same way as described in Phase 1._
@@ -972,7 +971,7 @@ with Synergy, and works exactly the same way as described in Phase 1._
 # Summary 
 
 This solution leverages HPE OneView and HPE Composable Infrastructure to
-provision a Mesosphere DC/OS Cluster, ready to run payload. The solution
+provision a Mesosphere DC/OS Cluster, ready to run workload. The solution
 can provision the cluster from a set of available compute resources in
 an HPE Composable Infrastructure, in less than 90mn using Ansible
 (C-Class) and even less than 35 minutes (Synergy and ImageStreamer).
