@@ -510,42 +510,42 @@ where **ov\_dcos.yml** is the main playbook provided in the solution.
 
 The playbook contains a series of plays:
 
-> \- name: Install all Physical Nodes  
->   hosts: all-nodes  
->   vars:  
->   ov\_osbp: "{{ os\_build\_plan }}"  
->   ov\_profile: "{{ ov\_template }}"  
->   gather\_facts: no  
->   roles:  
->   \- hpe-oneview-server  
->
-> \- name: All nodes are DC/OS Nodes  
->   hosts: all-nodes  
->   gather\_facts: yes  
->   roles:  
->   \- dcos-node  
-> 
+\- name: Install all Physical Nodes  
+  hosts: all-nodes  
+  vars:  
+  ov\_osbp: "{{ os\_build\_plan }}"  
+  ov\_profile: "{{ ov\_template }}"  
+  gather\_facts: no  
+  roles:  
+  \- hpe-oneview-server  
+
+\- name: All nodes are DC/OS Nodes  
+  hosts: all-nodes  
+  gather\_facts: yes  
+  roles:  
+  \- dcos-node  
+ 
 \- name: Collect configuration of nodes  
->   hosts: all-nodes  
->   gather\_facts: yes  
->   tasks:  
->   \- name: Link Certificate Authorities  
->   \# required on CentOS because DC/OS compilation is done on Ubuntu  
->   file: src=/etc/ssl/certs/ca-bundle.crt  
->   dest=/etc/ssl/certs/ca-certificates.crt state=link  
->   \- include: tasks/detect-public-ip.yml  
->
-> \- name: Generate DC/OS Bootstrap  
->   hosts: dcos-bootstrap  
->   gather\_facts: no  
->   tasks:  
->   \- include: tasks/bootstrap.yml  
-> 
->\- name: Install DC/OS Masters and Agents  
->   hosts: dcos-masters,dcos-agents  
->   gather\_facts: no  
->   tasks:  
->   \- include: tasks/install.yml  
+  hosts: all-nodes  
+  gather\_facts: yes  
+  tasks:  
+  \- name: Link Certificate Authorities  
+  \# required on CentOS because DC/OS compilation is done on Ubuntu  
+  file: src=/etc/ssl/certs/ca-bundle.crt  
+  dest=/etc/ssl/certs/ca-certificates.crt state=link  
+  \- include: tasks/detect-public-ip.yml  
+
+\- name: Generate DC/OS Bootstrap  
+  hosts: dcos-bootstrap  
+  gather\_facts: no  
+  tasks:  
+  \- include: tasks/bootstrap.yml  
+
+\- name: Install DC/OS Masters and Agents  
+  hosts: dcos-masters,dcos-agents  
+  gather\_facts: no  
+  tasks:  
+  \- include: tasks/install.yml  
 
 The sequencing of the task in this playbook is the following:
 
