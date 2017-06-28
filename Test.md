@@ -1120,6 +1120,7 @@ In order to use this solution, you should:
     <img src="./media/image21.png" width="594" height="286" />
 
 4.  Build appropriate golden image
+Follow instructions provided at https://github.com/HewlettPackard/image-streamer-rhel/blob/master/docs/HPE%20Synergy%20Image%20Streamer%20RHEL%207.3%20Capture.pdf
 
 5.  Create a Deployment Plan which associates the imported OS build plan
     and the created golden image. Leave all attribute values blank
