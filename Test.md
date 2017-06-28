@@ -137,7 +137,8 @@ installed using the following instructions:
 
 > git clone https://github.com/HewlettPackard/python-hpOneView.git  
 > cd python-hpOneView  
-> sudo python2.7 setup.py install
+> sudo python2.7  
+> setup.py install
 
 ### Composable Infrastructure Pack for Mesosphere DC/OS
 
@@ -170,7 +171,7 @@ the following instructions:
 
 > cd ~  
 > git clone <https://github.com/HewlettPackard/oneview-ansible.git>  
-> export ANSIBLE\_LIBRARY=~/oneview-ansible/library  
+> export ANSIBLE_LIBRARY=~/oneview-ansible/library  
 > export PYTHONPATH=$PYTHONPATH:$ANSIBLE_LIBRARY
 
 
@@ -237,17 +238,13 @@ configuration*](#network-configuration))
 We then configured a Server Profile Template for each type of nodes with
 the following details:
 
--   Bootstrap Node: 2 network connections (Deployment and Protected
-    Zone), BL460 Gen9
+* Bootstrap Node: 2 network connections (Deployment and Protected Zone), BL460 Gen9
 
--   Master Node: 2 network connections (Deployment and Protected Zone),
-    BL460 Gen8
+* Master Node: 2 network connections (Deployment and Protected Zone), BL460 Gen8
 
--   Agent Node: 2 network connections (Deployment and Private Zone),
-    BL460 Gen8
+* Agent Node: 2 network connections (Deployment and Private Zone), BL460 Gen8
 
--   Public Agent Node: 2 network connections (Deployment and Public
-    DMZ), BL460 Gen8
+* Public Agent Node: 2 network connections (Deployment and Public DMZ), BL460 Gen8
 
 <img src="./media/image5.png" width="720" height="285" />
 
@@ -315,50 +312,33 @@ Ansible configuration
 We configured an ansible.cfg configuration file with the following
 parameters:
 
-> \[defaults\]
->
-> log\_path = /root/log/dcos\_play.log
->
-> callback\_whitelist = profile\_tasks
->
-> library = /root/oneview-ansible/library/
->
-> host\_key\_checking = False
->
-> inventory = hosts
->
-> roles\_path = roles
->
-> forks = 50
+> \[defaults\]  
+> log\_path = /root/log/dcos\_play.log  
+> callback\_whitelist = profile\_tasks  
+> library = /root/oneview-ansible/library/  
+> host\_key\_checking = False  
+> inventory = hosts  
+> roles\_path = roles  
+> forks = 50  
 
--   **log\_path** allows us to get a log of each Playbook run in a log
-    file
+* **log\_path** allows us to get a log of each Playbook run in a log file
 
--   **callback\_whitelist** allows to get information about time spent
-    in each play during the run.
+* **callback\_whitelist** allows to get information about time spent in each play during the run.
 
--   **library** points to where we installed the OneView Python library
-    (see chapter [*Python library*](#_4d34og8)).
+* **library** points to where we installed the OneView Python library (see chapter [*Python library*](#_4d34og8)).
 
--   **inventory** points to the file in the local folder, which contains
-    the definition of our environment to build
+* **inventory** points to the file in the local folder, which contains the definition of our environment to build
 
--   **roles\_path** is the local folder where our 2 roles (**dcos-node**
-    and **hpe-oneview-server**) are located
+* **roles\_path** is the local folder where our 2 roles (**dcos-node** and **hpe-oneview-server**) are located
 
--   **forks** was changed to 50 (default is 5) to allow more parallelism
-    during task execution
+* **forks** was changed to 50 (default is 5) to allow more parallelism during task execution
 
-The solution uses a **group\_var/all** configuration file which has to
-be customized as explained below:
+The solution uses a **group\_var/all** configuration file which has to be customized as explained below:
 
-> \# DCOS Settings
->
-> DCOS\_GENERATE\_CONFIG\_PATH:
-> '**/root/dcos-cache/dcos\_generate\_config.sh**'
->
-> DCOS\_CLUSTER\_NAME: '**DCOS-ONEVIEW**'
->
+> \# DCOS Settings  
+> DCOS\_GENERATE\_CONFIG\_PATH:  
+> '**/root/dcos-cache/dcos\_generate\_config.sh**'  
+> DCOS\_CLUSTER\_NAME: '**DCOS-ONEVIEW**'  
 > DCOS\_BOOTSTRAP\_URL: '**http://bootstrap.cilab.net**'
 
 It is recommended to cache the dcos\_generate\_config.sh file which is a
@@ -374,14 +354,10 @@ for the installation.
 
 The following variables apply to ICsp:
 
-> icsp: **192.168.1.20** \# ICsp appliance IP Address
->
-> icsp\_username: **Administrator** \# ICsp user name
->
-> icsp\_password: **&lt;YourPasswordGoesHere&gt;** \# ICsp password
->
-> osbp\_custom\_attributes:
->
+> icsp: **192.168.1.20** \# ICsp appliance IP Address  
+> icsp\_username: **Administrator** \# ICsp user name  
+> icsp\_password: **&lt;YourPasswordGoesHere&gt;** \# ICsp password  
+> osbp\_custom\_attributes:  
 > - SSH\_CERT: "{{ lookup('file', '**~/.ssh/root\_ansible.pub**') }}"
 
 **Notes:**
@@ -391,105 +367,73 @@ The SSH\_CERT points to the public SSH key to be used by Ansible.
 The next section set username and password for iLOs of servers in the
 environment:
 
-> \#iLO Credentials
->
-> server\_username: **demopaq** \# iLO credentials for the target server
-> that will be registered in ICsp
->
-> server\_password: **&lt;YourPasswordGoesHere&gt;** \#iLO password
+> \#iLO Credentials  
+> server\_username: **demopaq** \# iLO credentials for the target server  
+> that will be registered in ICsp  
+> server\_password: **&lt;YourPasswordGoesHere&gt;** \#iLO password  
 
 Next, we define the DNS domain name and the DNS server IP address:
 
-> \# Network Settings
->
-> domain\_name: "**cilab.net"**
->
+> \# Network Settings  
+> domain\_name: "**cilab.net"**  
 > dns\_server: **192.168.1.1**
 
 Finally we define the properties of the 2 interfaces, which shall be set
 to use DHCP:
 
-> network\_config:
->
-> hostname: "{{ inventory\_hostname }}"
->
-> domain: "{{ domain\_name }}"
->
-> interfaces:
->
-> - macAddress: "{{ server\_profile.connections\[0\].mac }}"
->
-> enabled: true
->
-> dhcpv4: true
->
-> ipv6Autoconfig:
->
-> vlanid: -1
->
-> - macAddress: "{{ server\_profile.connections\[1\].mac }}"
->
-> enabled: true
->
-> dhcpv4: true
->
-> ipv6Autoconfig: false
->
-> virtualInterfaces:
+> network\_config:  
+> hostname: "{{ inventory\_hostname }}"   
+> domain: "{{ domain\_name }}"  
+> interfaces:  
+> - macAddress: "{{ server\_profile.connections\[0\].mac }}"  
+> enabled: true   
+> dhcpv4: true  
+> ipv6Autoconfig:  
+> vlanid: -1  
+> - macAddress: "{{ server\_profile.connections\[1\].mac }}"  
+> enabled: true  
+> dhcpv4: true   
+> ipv6Autoconfig: false  
+> virtualInterfaces:  
 
-In addition to the group\_vars/all, we have servers specific
+In addition to the **group\_vars/all**, we have servers specific
 configuration files to store the name of the OneView server profile to
 use, the ICsp OS Build plan to execute and the role of each server
 group. We have a file for each type of server:
 
--   group\_vars/dcos-bootstrap
+* group\_vars/dcos-bootstrap
 
-> \# OneView Settings
->
-> ov\_template: 'DCOS Bootstrap Node'
->
-> os\_build\_plan: 'DCOS - RHEL 7.2 x64 Scripted Install'
->
-> \#os\_build\_plan: 'DCOS - CentOS 7.2 x64 Scripted Install'
+> \# OneView Settings  
+> ov\_template: 'DCOS Bootstrap Node'  
+> os\_build\_plan: 'DCOS - RHEL 7.2 x64 Scripted Install'  
+> \#os\_build\_plan: 'DCOS - CentOS 7.2 x64 Scripted Install' 
 
--   group\_vars/dcos-masters
+* group\_vars/dcos-masters
 
-> \# OneView Settings
->
-> ov\_template: 'DCOS Master Node'
->
-> os\_build\_plan: 'DCOS - RHEL 7.2 x64 Scripted Install'
->
-> \#os\_build\_plan: 'DCOS - CentOS 7.2 x64 Scripted Install'
->
+> \# OneView Settings  
+> ov\_template: 'DCOS Master Node'  
+> os\_build\_plan: 'DCOS - RHEL 7.2 x64 Scripted Install'  
+> \#os\_build\_plan: 'DCOS - CentOS 7.2 x64 Scripted Install'  
 > node\_type: 'master'
 
--   group\_vars/dcos-private-agents
+* group\_vars/dcos-private-agents
 
-> \# OneView Settings
->
-> ov\_template: 'DCOS Private Agent Node'
->
-> os\_build\_plan: 'DCOS - RHEL 7.2 x64 Scripted Install'
->
-> \#os\_build\_plan: 'DCOS - CentOS 7.2 x64 Scripted Install'
->
+> \# OneView Settings  
+> ov\_template: 'DCOS Private Agent Node'   
+> os\_build\_plan: 'DCOS - RHEL 7.2 x64 Scripted Install'  
+> \#os\_build\_plan: 'DCOS - CentOS 7.2 x64 Scripted Install'  
 > node\_type: 'slave'
 
--   group\_vars/dcos-public-agents
+* group\_vars/dcos-public-agents
 
-> \# OneView Settings
->
-> ov\_template: 'DCOS Public Agent Node'
->
-> os\_build\_plan: 'DCOS - RHEL 7.2 x64 Scripted Install'
->
-> \#os\_build\_plan: 'DCOS - CentOS 7.2 x64 Scripted Install'
->
+> \# OneView Settings  
+> ov\_template: 'DCOS Public Agent Node'  
+> os\_build\_plan: 'DCOS - RHEL 7.2 x64 Scripted Install'  
+> \#os\_build\_plan: 'DCOS - CentOS 7.2 x64 Scripted Install'  
 > node\_type: 'slave\_public'
 
 The details about the HPE OneView appliance to use can be found in a
-configuration file called: **config.json.** This is where we set the IP
+configuration file called: **oneview_config.json.** This is where we set the IP
 address, API Version and credentials to the HPE OneView appliance.
 
 Mesosphere DC/OS
@@ -505,11 +449,11 @@ group\_vars/all
 Using HPE Composable Infrastructure to provision DC/OS Cluster
 --------------------------------------------------------------
 
-HPEâ€™s composable infrastructure provides an unified API that uses modern
+HPE's composable infrastructure provides an unified API that uses modern
 REST protocols to create, aggregate, and host internal IT resources so
-automation tools can provision onâ€demand and pragmatically. Developers
-donâ€™t need to have a detailed understanding of the underlying physical
-elements. By connecting automation tools with HPE OneView, bareâ€metal
+automation tools can provision on-demand and pragmatically. Developers
+don't need to have a detailed understanding of the underlying physical
+elements. By connecting automation tools with HPE OneView, bare-metal
 infrastructure can be directed the same way as virtual and public cloud
 resources.
 
@@ -519,62 +463,41 @@ Use case 1 - Day 0 DC/OS Deployment
 Here are the steps to provision HPE on DCOS using composable
 infrastructure for a configuration with:
 
--   1 bootstrap node (used to install all nodes)
-
--   3 master nodes
-
--   2 private agent nodes
-
--   1 public agent node
+* 1 bootstrap node (used to install all nodes)
+* 3 master nodes
+* 2 private agent nodes
+* 1 public agent node
 
 This is described by our Ansible inventory **hosts** file:
 
-> \# There is only one bootstrap node
+> \# There is only one bootstrap node  
+> \[dcos-bootstrap\]  
+> bootstrap  
 >
-> \[dcos-bootstrap\]
+> \# Masters should be an odd number  
+> \[dcos-masters\]  
+> master1  
+> master2  
+> master3  
 >
-> bootstrap
+> \# There are 2 types of agents, public and private  
+> \[dcos-agents:children\]  
+> dcos-public-agents  
+> dcos-private-agents  
 >
-> \# Masters should be an odd number
+> \# We start with 1 public agent  
+> \[dcos-public-agents\]  
+> agent1  
 >
-> \[dcos-masters\]
+> \# We start with 2 private agents  
+> \[dcos-private-agents\]  
+> agent2  
+> agent3  
 >
-> master1
->
-> master2
->
-> master3
->
-> \# There are 2 types of agents, public and private
->
-> \[dcos-agents:children\]
->
-> dcos-public-agents
->
-> dcos-private-agents
->
-> \# We start with 1 public agent
->
-> \[dcos-public-agents\]
->
-> agent1
->
-> \# We start with 2 private agents
->
-> \[dcos-private-agents\]
->
-> agent2
->
-> agent3
->
-> \# All nodes are either bootstrap, masters, or agents
->
-> \[all-nodes:children\]
->
-> dcos-bootstrap
->
-> dcos-masters
->
+> \# All nodes are either bootstrap, masters, or agents  
+> \[all-nodes:children\]  
+> dcos-bootstrap  
+> dcos-masters  
 > dcos-agents
 
 ### 
@@ -582,7 +505,7 @@ This is described by our Ansible inventory **hosts** file:
 The full provisioning of the solution is initiated by running the
 following command:
 
-ansible-playbook ov\_dcos.yml -vvv -e
+> ansible-playbook ov\_dcos.yml -vvv -e
 "ansible\_python\_interpreter=/usr/local/bin/python2.7"
 
 where **ov\_dcos.yml** is the main playbook provided in the solution.
