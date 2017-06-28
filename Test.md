@@ -49,14 +49,12 @@ The following software components were utilized:
 |                                                |                   |
 |------------------------------------------------|-------------------|
 | Component                                      | **Version**       |
-| Mesosphere DC/OS                               | 1.8.8 (Phase 1)   
-                                                                     
-                                                  1.9 (Phase 2)      |
+| Mesosphere DC/OS                               | 1.8.8 (Phase 1)   |                                                                     
+|                                                | 1.9 (Phase 2)     |
 | Ansible                                        | 2.2               |
 | Python                                         | 2.7.9             |
-| HPE OneView                                    | 3.00.05 (Phase 1) 
-                                                                     
-                                                  3.00.07 (Phase 2)  |
+| HPE OneView                                    | 3.00.05 (Phase 1) |
+|                                                | 3.00.07 (Phase 2) |
 | HPE Insight Control server provisioning (ICsp) | 7.6 (Phase 1)     |
 | Image Streamer                                 | 3.00.05 (Phase 2) |
 | Ansible module for HPE OneView                 | 3.1.1             |
