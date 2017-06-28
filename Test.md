@@ -510,7 +510,8 @@ where **ov\_dcos.yml** is the main playbook provided in the solution.
 
 The playbook contains a series of plays:
 
-\- name: Install all Physical Nodes  
+```yaml
+- name: Install all Physical Nodes  
   hosts: all-nodes  
   vars:  
   ov\_osbp: "{{ os\_build\_plan }}"  
@@ -519,13 +520,13 @@ The playbook contains a series of plays:
   roles:  
   \- hpe-oneview-server  
 
-\- name: All nodes are DC/OS Nodes  
+- name: All nodes are DC/OS Nodes  
   hosts: all-nodes  
   gather\_facts: yes  
   roles:  
   \- dcos-node  
  
-\- name: Collect configuration of nodes  
+- name: Collect configuration of nodes  
   hosts: all-nodes  
   gather\_facts: yes  
   tasks:  
@@ -535,18 +536,18 @@ The playbook contains a series of plays:
   dest=/etc/ssl/certs/ca-certificates.crt state=link  
   \- include: tasks/detect-public-ip.yml  
 
-\- name: Generate DC/OS Bootstrap  
+- name: Generate DC/OS Bootstrap  
   hosts: dcos-bootstrap  
   gather\_facts: no  
   tasks:  
   \- include: tasks/bootstrap.yml  
 
-\- name: Install DC/OS Masters and Agents  
+- name: Install DC/OS Masters and Agents  
   hosts: dcos-masters,dcos-agents  
   gather\_facts: no  
   tasks:  
   \- include: tasks/install.yml  
-
+````
 The sequencing of the task in this playbook is the following:
 
 <img src="./media/image7.png" width="634" height="362" />
