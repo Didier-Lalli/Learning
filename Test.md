@@ -137,8 +137,7 @@ installed using the following instructions:
 
 > git clone https://github.com/HewlettPackard/python-hpOneView.git  
 > cd python-hpOneView  
-> sudo python2.7  
-> setup.py install
+> sudo python2.7 setup.py install
 
 ### Composable Infrastructure Pack for Mesosphere DC/OS
 
