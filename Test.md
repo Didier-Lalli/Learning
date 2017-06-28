@@ -1,5 +1,4 @@
-Introduction
-============
+# Introduction
 
 Mesosphere Enterprise DC/OS is a comprehensive platform for building,
 running and scaling modern enterprise applications based on Apache
@@ -13,8 +12,7 @@ Mesosphere are working together to enable the ease of deployment and
 management of their joint solution using OneView as the focal point of
 integration.
 
-Solution Overview 
-==================
+# Solution Overview 
 
 This solution uses Ansible to automate and therefore dramatically speed
 up the deployment of a small cluster of Mesosphere DC/OS nodes on HPE
@@ -24,29 +22,23 @@ used HPE Synergy. The Ansible playbook allows the user to deploy a
 cluster of three DC/OS master nodes, one DC/OS public agent node, and
 two DC/OS private agent nodes.
 
-Solution Components 
-====================
+# Solution Components 
 
-Hardware
---------
-
-### 
+## Hardware
 
 The following hardware components were utilized:
 
-|                                |                                        |
 |--------------------------------|----------------------------------------|
 | Component                      | Purpose                                |
 | HPE ProLiant BL460cGen8 Blades | DC/OS master and agent nodes (Phase 1) |
 | HPE ProLian BL460c Gen9 Blade  | Bootstrap node (Phase 1)               |
 | HPE SY480 Gen9                 | All nodes (Phase 2)                    |
 
-Software Stack
---------------
+
+## Software Stack
 
 The following software components were utilized:
 
-|                                                |                   |
 |------------------------------------------------|-------------------|
 | Component                                      | **Version**       |
 | Mesosphere DC/OS                               | 1.8.8 (Phase 1)   |                                                                     
@@ -59,18 +51,12 @@ The following software components were utilized:
 | Image Streamer                                 | 3.00.05 (Phase 2) |
 | Ansible module for HPE OneView                 | 3.1.1             |
 
-### 
-
-Mesosphere DC/OS
-----------------
+## Mesosphere DC/OS
 
 In phase 1, we used OpenSource DC/OS version 1.8.8 and 1.9.
-
 In phase 2, we used Enterprise DC/OS version 1.9
 
-Management Software Stack
--------------------------
-
+## Management Software Stack
 ### HPE OneView
 
 HPE OneView 3.00.05 running as a VMware appliance was used during this
@@ -151,7 +137,7 @@ set of tools used to build the entire solution
     also the DC/OS components
 *   Artifact Bundle to load in Synergy Image Streamer (used for Synergy only)
 
-### You can simply clone the repo using:
+You can simply clone the repo using:
 
 > cd ~  
 > git clone https://github.com/HewlettPackard/dcos-hpe-oneview
@@ -174,26 +160,22 @@ the following instructions:
 > export PYTHONPATH=$PYTHONPATH:$ANSIBLE_LIBRARY
 
 
-Proof-of-concept lab environment - C7000 (Phase 1)
-==================================================
+# Proof-of-concept lab environment - C7000 (Phase 1)
 
-Compute resource configuration
-------------------------------
+## Compute resource configuration
 
 HPE assembled a proof-of-concept lab environment for DCOS which consists
 of 9xBL460 server (8xGen8 and 1xGen9) in a C-Class Blade C7000
 enclosure. The C7000 enclosure was configured with VirtualConnect
 interconnect modules.
 
-Storage configuration
----------------------
+## Storage configuration
 
 THE HPE servers were configured to use local storage using the local
 SmartArray controller. Each server was configured with a single disk, in
 a RAID 0 configuration.
 
-Network configuration
----------------------
+## Network configuration
 
 The following network configuration was implemented:
 
@@ -206,12 +188,10 @@ one for each network. This server also provides a role of name server
 (DNS), with forwarder enabled to the internet. DHCP is also set to
 automatically register/unregister names in the DNS server.
 
-**Notes:**
-
-HPE servers are provisioned in the lab with DHCP. In a production
+_**Notes:** HPE servers are provisioned in the lab with DHCP. In a production
 environment, it is recommended to assign DHCP reservations, to make sure
 that IP addresses of the target DC/OS nodes will never change. This is
-required because DC/OS identifies machines by IP.
+required because DC/OS identifies machines by IP._
 
 The network environment needs to be able to access the Internet during
 the provisioning of the cluster. This is the case of our lab and each
@@ -220,13 +200,10 @@ an IPCop appliance running on VMware
 ([*http://www.ipcop.org/*](http://www.ipcop.org/)). IPCop was also used
 to provide VPN access to the lab environment.
 
-**Notes:**
+_**Notes:**: Configuration will need to be adapted if operations are performed behind
+a corporate firewall._
 
-Configuration will need to be adapted if operations are performed behind
-a corporate firewall.
-
-HPE OneView configuration
--------------------------
+## HPE OneView configuration
 
 In HPE OneView we have created the networks required for the desired
 configuration (See diagram in chapter [*Network
@@ -247,14 +224,11 @@ the following details:
 
 <img src="./media/image5.png" width="720" height="285" />
 
-**Notes:**
-
-Although we created those Server Profile Templates manually, chapter
+_**Notes:** Although we created those Server Profile Templates manually, chapter
 [*Full infrastructure as code*](#full-infrastructure-as-code) shows how
-to create those artifacts with code
+to create those artifacts with code_
 
-HPE ICsp Configuration
-----------------------
+### HPE ICsp Configuration
 
 In Phase 1, we used ICsp (Insight Control Server Provisioning) to
 perform unattended installation of Operating Systems on target nodes.
@@ -290,23 +264,19 @@ used for the building of all our nodes in the cluster
 
 <img src="./media/image6.png" width="720" height="443" />
 
-**Notes:**
-
-Later on during the development of the solution we also validated the
+_**Notes:**: Later on during the development of the solution we also validated the
 deployment on RHEL 7.2. The Kickstart file for RHEL7.2 is also provided
 in the solution. You can choose between CentOS 7.2 or RHEL7.2, by simply
-changing the ICsp OS build plan in the custom group\_vars files
+changing the ICsp OS build plan in the custom group\_vars files_
 
-iLO Configuration
------------------
+### iLO Configuration
 
 All iLO of servers involved in the DC/OS cluster should be set with a
 common administrative account. There are scripts to do this, leveraging
 the Single Sign On (SSO) from OneView and iLO of managed server-hardware
 ([*https://github.com/HewlettPackard/POSH-HPOneView/wiki/Creator-iLO*](https://github.com/HewlettPackard/POSH-HPOneView/wiki/Creator-iLO))
 
-Ansible configuration
----------------------
+### Ansible configuration
 
 We configured an ansible.cfg configuration file with the following
 parameters:
@@ -345,10 +315,8 @@ cached file on the Ansible Station. **DCOS\_CLUSTER\_NAME** sets the
 DC/OS Cluster name. The Boostrap URL is used by all nodes to install
 DC/OS
 
-**Notes:**
-
-This allows to easily change the version of the DC/OS software to use
-for the installation.
+_**Notes:** This allows to easily change the version of the DC/OS software to use
+for the installation._
 
 The following variables apply to ICsp:
 
@@ -358,9 +326,7 @@ The following variables apply to ICsp:
 > osbp\_custom\_attributes:  
 > \- SSH\_CERT: "{{ lookup('file', '**~/.ssh/root\_ansible.pub**') }}"
 
-**Notes:**
-
-The SSH\_CERT points to the public SSH key to be used by Ansible.
+_**Notes:** The SSH\_CERT points to the public SSH key to be used by Ansible._
 
 The next section set username and password for iLOs of servers in the
 environment:
@@ -434,8 +400,7 @@ The details about the HPE OneView appliance to use can be found in a
 configuration file called: **oneview_config.json.** This is where we set the IP
 address, API Version and credentials to the HPE OneView appliance.
 
-Mesosphere DC/OS
-----------------
+### Mesosphere DC/OS
 
 We downloaded the DC/OS software from:
 [*http://*](http://downloads.dcos.io/dcos/stable/dcos_generate_config.sh)[*downloads.dcos.io/dcos/stable/dcos\_generate\_config.sh*](http://downloads.dcos.io/dcos/stable/dcos_generate_config.sh)
@@ -444,7 +409,7 @@ The file is cached on the Ansible station in a folder. By default the
 script looks for it in **/root/dcos-cache**. This is configured in
 group\_vars/all
 
-Using HPE Composable Infrastructure to provision DC/OS Cluster
+### Using HPE Composable Infrastructure to provision DC/OS Cluster
 --------------------------------------------------------------
 
 HPE's composable infrastructure provides an unified API that uses modern
@@ -455,8 +420,7 @@ elements. By connecting automation tools with HPE OneView, bare-metal
 infrastructure can be directed the same way as virtual and public cloud
 resources.
 
-Use case 1 - Day 0 DC/OS Deployment
------------------------------------
+## Use case 1 - Day 0 DC/OS Deployment
 
 Here are the steps to provision HPE on DCOS using composable
 infrastructure for a configuration with:
@@ -469,43 +433,41 @@ infrastructure for a configuration with:
 This is described by our Ansible inventory **hosts** file:
 
 ````yaml
-> \# There is only one bootstrap node  
-> \[dcos-bootstrap\]  
-> bootstrap  
->
-> \# Masters should be an odd number  
-> \[dcos-masters\]  
-> master1  
-> master2  
-> master3  
->
-> \# There are 2 types of agents, public and private  
-> \[dcos-agents:children\]  
-> dcos-public-agents  
-> dcos-private-agents  
->
-> \# We start with 1 public agent  
-> \[dcos-public-agents\]  
-> agent1  
->
-> \# We start with 2 private agents  
-> \[dcos-private-agents\]  
-> agent2  
-> agent3  
->
-> \# All nodes are either bootstrap, masters, or agents  
-> \[all-nodes:children\]  
-> dcos-bootstrap  
-> dcos-masters  
-> dcos-agents
-````
-### 
+# There is only one bootstrap node  
+[dcos-bootstrap]  
+bootstrap  
+
+# Masters should be an odd number  
+[dcos-masters]  
+master1  
+master2  
+master3  
+
+# There are 2 types of agents, public and private  
+[dcos-agents:children]  
+dcos-public-agents  
+dcos-private-agents  
+
+# We start with 1 public agent  
+[dcos-public-agents]  
+agent1  
+
+# We start with 2 private agents  
+[dcos-private-agents]  
+agent2  
+agent3  
+
+# All nodes are either bootstrap, masters, or agents  
+[all-nodes:children]  
+dcos-bootstrap  
+dcos-masters  
+dcos-agents
+```` 
 
 The full provisioning of the solution is initiated by running the
 following command:
 
-> ansible-playbook ov\_dcos.yml -vvv -e
-"ansible\_python\_interpreter=/usr/local/bin/python2.7"
+> ansible-playbook ov\_dcos.yml -vvv -e "ansible\_python\_interpreter=/usr/local/bin/python2.7"
 
 where **ov\_dcos.yml** is the main playbook provided in the solution.
 
@@ -547,6 +509,7 @@ The playbook contains a series of plays:
   tasks:  
     - include: tasks/install.yml  
 ````
+
 The sequencing of the task in this playbook is the following:
 
 <img src="./media/image7.png" width="634" height="362" />
@@ -606,11 +569,9 @@ folder **./roles/hpe-oneview-server**. The **file
 
 <img src="./media/image9.png" width="648" height="302" />
 
-**Notes:**
-
-The tasks in the **hpe-oneview-server** role all run on the Ansible
+_**Notes:** The tasks in the **hpe-oneview-server** role all run on the Ansible
 Station, as instructed by the **deleguate\_to: localhost**, as
-illustrated below:
+illustrated below:_
 
 ````yaml
 - name: Create Server Profiles  
@@ -776,8 +737,7 @@ We can also select the Node view to validate our 3 Agents (1 public and
 
 <img src="./media/image12.png" width="720" height="423" />
   
-Use case 2 - Adding an Agent node to a live DC/OS cluster
----------------------------------------------------------
+## Use case 2 - Adding an Agent node to a live DC/OS cluster
 
 Because the Ansible playbook have been designed to be idempotent
 (meaning that when run multiple times it will only make the changes to
@@ -799,8 +759,7 @@ list as a Healthy node.
 
 <img src="./media/image13.png" width="720" height="424" />
 
-Use case 3 - Removing an Agent node
------------------------------------
+## Use case 3 - Removing an Agent node
 
 We have created a separate playbook to remove an agent from the cluster.
 This playbooks will operate on nodes listed in the
@@ -818,6 +777,7 @@ the private agents list of that same hosts file:
 [dcos-private-agents]
 agent2  
 agent3
+````
 
 Once this is done we can run the following ansible playbook:
 
@@ -827,8 +787,7 @@ This will first drain all services of all dcos-evicted-agents and then
 delete the HPE OneView server profiles associated with these nodes and
 return those resources to the available compute pool of resources.
 
-Use case 4 - Decomposing and returning resources to free pools
---------------------------------------------------------------
+## Use case 4 - Decomposing and returning resources to free pools
 
 We have created another ansible playbook for destroying completely the
 DC/OS cluster and returning all the compute resources to the free pool
@@ -837,13 +796,10 @@ and it should be invoked (with care) using the following command:
 
 > ansible-playbook ov\_dcos\_decompose\_all.yml -vvv -e "ansible\_python\_interpreter=/usr/local/bin/python2.7"
 
-**Notes**
+_**Notes:** Be extremely careful with this playbook as no question is asked and the
+entire cluster will be deleted_
 
-Be extremely careful with this playbook as no question is asked and the
-entire cluster will be deleted
-
-Full infrastructure as code
----------------------------
+## Full infrastructure as code
 
 While for this PoC, we have created the server profile templates in HPE
 OneView using the GUI, we can also use Ansible and yaml to describe
@@ -855,30 +811,25 @@ Ansible playbook to create a Server Profile Template in HPE OneView
 called **create\_server\_profile\_template.yml.** These should be
 adapted to match the target network configuration.
 
-Proof-of-concept lab environment - Synergy (Phase 2)
-====================================================
+# Proof-of-concept lab environment - Synergy (Phase 2)
 
-Compute resource configuration
-------------------------------
+## Compute resource configuration
 
 HPE assembled a proof-of-concept lab environment for DCOS which consists
 of 18xSY480 Gen 9 servers in 3 Synergy frames.
 
-Storage configuration
----------------------
+## Storage configuration
 
 THE HPE servers were configured to use the Synergy Image Streamer for
 the OS Volume. The test does not include setting up external storage for
 DC/OS agents.
 
-Network configuration
----------------------
+## Network configuration
 
 In this second phase a flat network was used, so all nodes are on the
 same physical network.
 
-HPE Composer configuration
---------------------------
+## HPE Composer configuration
 
 In HPE Composer (OneView) we have created a single Server Profile
 Template for all nodes with the following details:
@@ -888,8 +839,7 @@ Template for all nodes with the following details:
 
 <img src="./media/image14.png" width="720" height="344" />
 
-HPE Image Streamer configuration
---------------------------------
+## HPE Image Streamer configuration
 
 We configured Image Streamer to have an OS Deployment Plan
 
@@ -902,10 +852,8 @@ name of the system to provision. **MGMT** and **interface\_name** to
 pass the interface used for networking, **SSH\_CERT1** and
 **SSH\_CERT2** for the SSH key used by Ansible.
 
-**Notes:**
-
-This is a temporary workaround as there is a current limitation on the
-length of a plan attribute.
+_**Notes:** This is a temporary workaround as there is a current limitation on the
+length of a plan attribute._
 
 The OS Build plan is referencing a golden image and an OS build plan.
 The OS Build Plan has the steps which will happen to transform a Golden
@@ -915,8 +863,7 @@ changes on the OS Volume, using the input parameters of the Build Plan
 
 <img src="./media/image16.png" width="720" height="370" />
 
-Image Streamer Golden Image
----------------------------
+## Image Streamer Golden Image
 
 We created a Golden image for this test, which contains the following:
 
@@ -926,14 +873,11 @@ We created a Golden image for this test, which contains the following:
 
 <img src="./media/image17.png" width="720" height="366" />
 
-**Notes:**
-
-A similar golden image should be built and referenced by the OS
+_**Notes:** A similar golden image should be built and referenced by the OS
 Deployment Plan provided in the artifact bundle of this solution before
-it can be reused.
+it can be reused._
 
-Importing the solution artifact bundle
---------------------------------------
+## Importing the solution artifact bundle
 
 We created an artifact bundle with the following components:
 
@@ -962,8 +906,7 @@ In order to use this solution, you should:
 
     <img src="./media/image22.png" width="375" height="259" />
 
-Use case 1 - Day 0 DC/OS Deployment
------------------------------------
+## Use case 1 - Day 0 DC/OS Deployment
 
 We used the same Ansible playbook, but adapted some of the files only
 when the architecture imposed a different approach. To do this we used a
@@ -979,10 +922,8 @@ docker-on-HPE-SYNERGY.yml and docker-on-HPE-CCLASS.yml. Finally within
 Ansible, we have a single playbook which references: docker-on-{{
 HARDWARE\_ARCHITECTURE }}.yml
 
-**Notes:**
-
-We provided implementation for HPE-CCLASS and HPE-SYNERGY but not yet
-HPE-DL.
+_**Notes:** We provided implementation for HPE-CCLASS and HPE-SYNERGY but not yet
+HPE-DL._
 
 We also added a few more variables in **group\_vars/all**:
 
@@ -1004,13 +945,10 @@ We can invoke the playbook the same way as in Phase 1:
 Provisioning was down from 1h22mn to 36mn using the ImageStream instead
 of a PXE boot installation such as ICsp.
 
-**Notes:**
+_**Notes:** Use cases 2 (adding nodes) and 3 (removing agent nodes) was also tested
+with Synergy, and works exactly the same way as described in Phase 1._
 
-Use cases 2 (adding nodes) and 3 (removing agent nodes) was also tested
-with Synergy, and works exactly the same way as described in Phase 1.
-
-Summary 
-========
+# Summary 
 
 This solution leverages HPE OneView and HPE Composable Infrastructure to
 provision a Mesosphere DC/OS Cluster, ready to run payload. The solution
