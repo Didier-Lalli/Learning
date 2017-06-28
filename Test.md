@@ -109,8 +109,7 @@ Download [*Python*](https://www.python.org/) using following command
 from python official site. You can also download latest version in
 place of specified below.
 
-> cd /opt
->
+> cd /opt  
 > wget --no-check-certificate[
 > ](https://www.python.org/ftp/python/2.7.13/Python-2.7.13.tgz)[*https://www.python.org/ftp/python/2.7.13/Python-2.7.13.tgz*](https://www.python.org/ftp/python/2.7.13/Python-2.7.13.tgz)
 
@@ -119,16 +118,10 @@ place of specified below.
 Use below set of commands to extract Python source code and compile it
 on your system using altinstall.
 
-> tar -xvf Python-2.7.13.tgz
->
-> cd Python-2.7.13
->
-> ./configure
->
-> make altinstall
->
-> \# make altinstall is used to prevent replacing the default python binary file /usr/bin/python.
-
+> tar -xvf Python-2.7.13.tgz  
+> cd Python-2.7.13  
+> ./configure  
+> make altinstall  # make altinstall is used to prevent replacing the default python binary file /usr/bin/python.
 
 #### *Step 4: Check the Python Version*
 
